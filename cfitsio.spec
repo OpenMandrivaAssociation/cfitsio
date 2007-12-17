@@ -14,7 +14,6 @@ Group:		System/Libraries
 BuildRequires:	gcc-gfortran
 BuildRequires: pkgconfig
 Obsoletes: %libname
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 CFITSIO is a library of C and Fortran subroutines for reading and 
