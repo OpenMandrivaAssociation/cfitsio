@@ -1,10 +1,10 @@
-%define sversion 3040
+%define sversion 3060
 
 %define libname %mklibname %name
 %define develname %mklibname %name -d
 
 Name: cfitsio
-Version: 3.040
+Version: 3.060
 Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
@@ -32,6 +32,7 @@ Group:		System/Libraries
 Provides:	fitsio-devel = %{version} 
 Provides:   cfitsio-devel = %{version}
 Requires:   pkgconfig
+Obsoletes:  libcfitsio
 
 %description -n %{develname}
 CFITSIO is a library of C and Fortran subroutines for reading and 
