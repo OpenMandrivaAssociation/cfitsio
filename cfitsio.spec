@@ -5,7 +5,7 @@
 
 Name: cfitsio
 Version: 3.060
-Release: %mkrel 1
+Release: %mkrel 2
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 License:	BSD-like
@@ -13,7 +13,6 @@ Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 BuildRequires:	gcc-gfortran
 BuildRequires: pkgconfig
-Obsoletes: %libname
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -26,6 +25,23 @@ At the same time, CFITSIO provides many advanced features that have made
 it the most widely used FITS file programming interface in the astronomical 
 community.
 
+%package -n %libname
+License: BSD-like
+Summary: Library for accessing files in FITS format for C and Fortran
+Group:	 	 System/Libraries
+
+%description -n %{libname}
+
+CFITSIO is a library of C and Fortran subroutines for reading and
+writing data files in FITS (Flexible Image Transport System) data
+format.  CFITSIO simplifies the task of writing software that deals
+with FITS files by providing an easy to use set of high-level routines
+that insulate the programmer from the internal complexities of the
+FITS file format.  At the same time, CFITSIO provides many advanced
+features that have made it the most widely used FITS file programming
+interface in the astronomical community.  This package contains the
+shared library required by prgrams that use the cfits library.
+
 %package -n %{develname}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
@@ -33,7 +49,7 @@ Group:		System/Libraries
 Provides:	fitsio-devel = %{version} 
 Provides:   cfitsio-devel = %{version}
 Requires:   pkgconfig
-Obsoletes:  libcfitsio
+Requires:   %libname = %version
 
 %description -n %{develname}
 CFITSIO is a library of C and Fortran subroutines for reading and 
@@ -52,9 +68,9 @@ the cfits library.
 %setup -q -n %{name}
 
 %build
-%configure
+%configure2_5x
 
-%make
+%make all shared
 
 %install
 rm -Rf %{buildroot}
@@ -64,6 +80,13 @@ install -d %{buildroot}/{%{_libdir},%{_includedir}}
 %clean
 rm -Rf %{buildroot}
 
+%post -n %{libname} -p /sbin/ldconfig
+
+%postun -n %{libname} -p /sbin/ldconfig
+
+%files -n %{libname}
+%defattr(-,root,root)
+%{_libdir}/*.so
 
 %files -n %{develname}
 %defattr(-,root,root)
