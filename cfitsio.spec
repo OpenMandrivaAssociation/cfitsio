@@ -2,10 +2,11 @@
 
 %define libname %mklibname %name
 %define develname %mklibname %name -d
+%define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
 Version: 3.060
-Release: %mkrel 2
+Release: %mkrel 3
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 License:	BSD-like
@@ -64,6 +65,26 @@ community.
 This package contains the headers required for compiling software that uses
 the cfits library.
 
+%package -n %{develnamestatic}
+License:	BSD-like
+Summary:	Library for accessing files in FITS format for C and Fortran
+Group:		System/Libraries
+Requires:   %{develname}
+Requires:   %libname = %version
+
+%description -n %{develnamestatic}
+CFITSIO is a library of C and Fortran subroutines for reading and 
+writing data files in FITS (Flexible Image Transport System) data format. 
+CFITSIO simplifies the task of writing software that deals with FITS 
+files by providing an easy to use set of high-level routines that insulate 
+the programmer from the internal complexities of the FITS file format. 
+At the same time, CFITSIO provides many advanced features that have made 
+it the most widely used FITS file programming interface in the astronomical 
+community.
+
+This package contains the headers required for compiling software that uses
+the cfits library.
+
 %prep
 %setup -q -n %{name}
 
@@ -91,7 +112,9 @@ rm -Rf %{buildroot}
 %files -n %{develname}
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/*.a
 %{_libdir}/pkgconfig/*
 
+%files -n %{develnamestatic}
+%defattr(-,root,root)
+%{_libdir}/*.a
 
