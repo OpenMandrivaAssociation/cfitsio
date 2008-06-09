@@ -101,9 +101,13 @@ install -d %{buildroot}/{%{_libdir},%{_includedir}}
 %clean
 rm -Rf %{buildroot}
 
+%if %mdkversion < 200900
 %post -n %{libname} -p /sbin/ldconfig
+%endif
 
+%if %mdkversion < 200900
 %postun -n %{libname} -p /sbin/ldconfig
+%endif
 
 %files -n %{libname}
 %defattr(-,root,root)
