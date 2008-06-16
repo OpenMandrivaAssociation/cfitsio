@@ -6,7 +6,7 @@
 
 Name: cfitsio
 Version: 3.060
-Release: %mkrel 3
+Release: %mkrel 4
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 License:	BSD-like
