@@ -1,14 +1,15 @@
-%define sversion 3060
+%define sversion 3090
 
-%define libname %mklibname %name
+%define libname %mklibname %name 3
 %define develname %mklibname %name -d
 %define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
-Version: 3.060
-Release: %mkrel 4
+Version: 3.090
+Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
+Patch0: cfitsio-3.090-autotools.patch
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
@@ -30,6 +31,7 @@ community.
 License: BSD-like
 Summary: Library for accessing files in FITS format for C and Fortran
 Group:	 	 System/Libraries
+Obsoletes:	%{_lib}%{name} < 3.090
 
 %description -n %{libname}
 
@@ -51,6 +53,7 @@ Provides:	fitsio-devel = %{version}
 Provides:   cfitsio-devel = %{version}
 Requires:   pkgconfig
 Requires:   %libname = %version
+Conflicts:	%{_lib}%{name} < 3.090
 
 %description -n %{develname}
 CFITSIO is a library of C and Fortran subroutines for reading and 
@@ -87,11 +90,12 @@ the cfits library.
 
 %prep
 %setup -q -n %{name}
+%patch0 -p0
 
 %build
-%configure2_5x
-
-%make all shared
+autoreconf -fi
+%configure2_5x --enable-static --enable-shared
+%make
 
 %install
 rm -Rf %{buildroot}
@@ -109,12 +113,18 @@ rm -Rf %{buildroot}
 %postun -n %{libname} -p /sbin/ldconfig
 %endif
 
+%files
+%defattr(-,root,root)
+%{_bindir}/*
+
 %files -n %{libname}
 %defattr(-,root,root)
-%{_libdir}/*.so
+%{_libdir}/*.so.3*
 
 %files -n %{develname}
 %defattr(-,root,root)
+%{_libdir}/*.so
+%{_libdir}/*.la
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 
