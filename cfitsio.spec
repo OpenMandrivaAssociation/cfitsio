@@ -1,11 +1,11 @@
-%define sversion 3090
+%define sversion %(echo %version |sed -e 's#\\.##')
 
 %define libname %mklibname %name 3
 %define develname %mklibname %name -d
 %define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
-Version: 3.090
+Version: 3.100
 Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
