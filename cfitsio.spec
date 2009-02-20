@@ -1,11 +1,11 @@
 %define sversion %(echo %version |sed -e 's#\\.##')
-
-%define libname %mklibname %name 3
+%define major 3
+%define libname %mklibname %{name} %{major}
 %define develname %mklibname %name -d
 %define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
-Version: 3.100
+Version: 3.130
 Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
@@ -27,7 +27,7 @@ At the same time, CFITSIO provides many advanced features that have made
 it the most widely used FITS file programming interface in the astronomical 
 community.
 
-%package -n %libname
+%package -n %{libname}
 License: BSD-like
 Summary: Library for accessing files in FITS format for C and Fortran
 Group:	 	 System/Libraries
@@ -119,7 +119,7 @@ rm -Rf %{buildroot}
 
 %files -n %{libname}
 %defattr(-,root,root)
-%{_libdir}/*.so.3*
+%{_libdir}/*.so.%{major}*
 
 %files -n %{develname}
 %defattr(-,root,root)
