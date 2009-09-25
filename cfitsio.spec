@@ -6,7 +6,7 @@
 
 Name: cfitsio
 Version: 3.181
-Release: %mkrel 1
+Release: %mkrel 2
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 Patch0: cfitsio-3.090-autotools.patch
