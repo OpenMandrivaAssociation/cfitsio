@@ -5,11 +5,11 @@
 %define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
-Version: 3.181
-Release: %mkrel 2
+Version: 3.210
+Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
-Patch0: cfitsio-3.090-autotools.patch
+Patch0: cfitsio-3.210-autotools.patch
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
