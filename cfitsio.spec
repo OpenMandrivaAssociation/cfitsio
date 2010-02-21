@@ -5,7 +5,7 @@
 %define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
-Version: 3.210
+Version: 3.240
 Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
