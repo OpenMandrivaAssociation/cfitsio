@@ -1,20 +1,21 @@
 %define sversion %(echo %version |sed -e 's#\\.##')
-%define major 3
+%define major 0
 %define libname %mklibname %{name} %{major}
 %define develname %mklibname %name -d
 %define develnamestatic %mklibname %name -d -s
 
 Name: cfitsio
-Version: 3.240
+Version: 3.250
 Release: %mkrel 1
 URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
-Patch0: cfitsio-3.210-autotools.patch
+Patch0:         cfitsio.patch
+Patch1:         cfitsio-pkgconfig.patch
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 BuildRequires:	gcc-gfortran
-BuildRequires: pkgconfig
+BuildRequires:	pkgconfig
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -90,18 +91,41 @@ the cfits library.
 
 %prep
 %setup -q -n %{name}
-%patch0 -p0
+%patch0 -p1
+%patch1 -p1
 
 %build
-autoreconf -fi
-%configure2_5x --enable-static --enable-shared
-%make
+FC=f95
+export FC
+export CC=gcc # fixes -O*, -g
+%configure2_5x
+%make shared
+ln -s libcfitsio.so.0 libcfitsio.so
+%make fpack
+%make funpack
+unset FC
+# Manually fix pkgconfig .pc file (BZ 436539, BZ 618291)
+sed 's|/usr/include|/usr/include/%{name}|' cfitsio.pc >cfitsio.pc.new
+mv cfitsio.pc.new cfitsio.pc
+
+%check
+make testprog
+LD_LIBRARY_PATH=. ./testprog > testprog.lis
+cmp -s testprog.lis testprog.out
+cmp -s testprog.fit testprog.std
 
 %install
-rm -Rf %{buildroot}
-install -d %{buildroot}/{%{_libdir},%{_includedir}}
-%makeinstall_std CFITSIO_LIB=%{buildroot}/%{_libdir} CFITSIO_INCLUDE=%{buildroot}/%{_includedir}
-
+rm -rf %{buildroot}
+mkdir -p %{buildroot}
+mkdir -p %{buildroot}%{_libdir}
+mkdir -p %{buildroot}%{_includedir}/%{name}
+make LIBDIR=%{_lib} INCLUDEDIR=include/%{name} CFITSIO_LIB=%{buildroot}%{_libdir} \
+     CFITSIO_INCLUDE=%{buildroot}%{_includedir}/%{name} install
+pushd %{buildroot}%{_libdir}
+ln -s libcfitsio.so.0 libcfitsio.so
+popd
+mkdir %{buildroot}%{_bindir}
+cp -p f{,un}pack %{buildroot}%{_bindir}/
 %clean
 rm -Rf %{buildroot}
 
@@ -124,7 +148,6 @@ rm -Rf %{buildroot}
 %files -n %{develname}
 %defattr(-,root,root)
 %{_libdir}/*.so
-%{_libdir}/*.la
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 
