@@ -4,11 +4,11 @@
 %define develname %mklibname %name -d
 %define develnamestatic %mklibname %name -d -s
 
-Name: cfitsio
-Version: 3.250
-Release: %mkrel 3
-URL:	http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
-Source:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
+Name:		cfitsio
+Version:	3.290
+Release:	1
+URL:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
+Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 Patch0:         cfitsio.patch
 Patch1:         cfitsio-pkgconfig.patch
 License:	BSD-like
@@ -16,7 +16,6 @@ Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 BuildRequires:	gcc-gfortran
 BuildRequires:	pkgconfig
-BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 CFITSIO is a library of C and Fortran subroutines for reading and 
@@ -52,7 +51,6 @@ Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 Provides:	fitsio-devel = %{version} 
 Provides:   cfitsio-devel = %{version}
-Requires:   pkgconfig
 Requires:   %libname = %version
 Conflicts:	%{_lib}%{name} < 3.090
 
@@ -73,7 +71,7 @@ the cfits library.
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
-Requires:   %{develname}
+Requires:   %{develname} = %version
 Requires:   %libname = %version
 
 %description -n %{develnamestatic}
@@ -126,16 +124,6 @@ ln -s libcfitsio.so.0 libcfitsio.so
 popd
 mkdir %{buildroot}%{_bindir}
 cp -p f{,un}pack %{buildroot}%{_bindir}/
-%clean
-rm -Rf %{buildroot}
-
-%if %mdkversion < 200900
-%post -n %{libname} -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %{libname} -p /sbin/ldconfig
-%endif
 
 %files
 %defattr(-,root,root)
@@ -154,4 +142,7 @@ rm -Rf %{buildroot}
 %files -n %{develnamestatic}
 %defattr(-,root,root)
 %{_libdir}/*.a
+
+
+
 
