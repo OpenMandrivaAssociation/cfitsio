@@ -1,0 +1,12 @@
+--- cfitsio/cfitsio.pc.in.orig	2011-09-22 22:04:57.000000000 +0200
++++ cfitsio/cfitsio.pc.in	2011-12-15 02:27:46.225609600 +0100
+@@ -5,7 +5,7 @@
+ 
+ Name: cfitsio
+ Description: FITS File Subroutine Library
+-Version: 3.29
++Version: 3.290
+ Libs: -L${libdir} -lcfitsio @LIBS@
+ Libs.private: -lm
+ Cflags: -I${includedir}
+
