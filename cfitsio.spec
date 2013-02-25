@@ -1,8 +1,8 @@
-%define sversion %(echo %version |sed -e 's#\\.##')
-%define major 0
-%define libname %mklibname %{name} %{major}
-%define develname %mklibname %name -d
-%define develnamestatic %mklibname %name -d -s
+%define	sversion %(echo %version |sed -e 's#\\.##')
+%define	major	0
+%define	libname	%mklibname %{name} %{major}
+%define	devname	%mklibname %name -d
+%define	static	%mklibname %name -d -s
 
 Name:		cfitsio
 Version:	3.290
@@ -27,13 +27,13 @@ At the same time, CFITSIO provides many advanced features that have made
 it the most widely used FITS file programming interface in the astronomical 
 community.
 
-%package -n %{libname}
-License: BSD-like
-Summary: Library for accessing files in FITS format for C and Fortran
-Group:	 	 System/Libraries
+%package -n	%{libname}
+License:	BSD-like
+Summary:	Library for accessing files in FITS format for C and Fortran
+Group:		System/Libraries
 Obsoletes:	%{_lib}%{name} < 3.090
 
-%description -n %{libname}
+%description -n	%{libname}
 
 CFITSIO is a library of C and Fortran subroutines for reading and
 writing data files in FITS (Flexible Image Transport System) data
@@ -45,16 +45,16 @@ features that have made it the most widely used FITS file programming
 interface in the astronomical community.  This package contains the
 shared library required by prgrams that use the cfits library.
 
-%package -n %{develname}
+%package -n	%{devname}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 Provides:	fitsio-devel = %{version} 
-Provides:   cfitsio-devel = %{version}
-Requires:   %libname = %version
+Provides:	cfitsio-devel = %{version}
+Requires:	%{libname} = %{version}
 Conflicts:	%{_lib}%{name} < 3.090
 
-%description -n %{develname}
+%description -n	%{devname}
 CFITSIO is a library of C and Fortran subroutines for reading and 
 writing data files in FITS (Flexible Image Transport System) data format. 
 CFITSIO simplifies the task of writing software that deals with FITS 
@@ -67,14 +67,14 @@ community.
 This package contains the headers required for compiling software that uses
 the cfits library.
 
-%package -n %{develnamestatic}
+%package -n %{static}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
-Requires:   %{develname} = %version
+Requires:   %{devname} = %version
 Requires:   %libname = %version
 
-%description -n %{develnamestatic}
+%description -n %{static}
 CFITSIO is a library of C and Fortran subroutines for reading and 
 writing data files in FITS (Flexible Image Transport System) data format. 
 CFITSIO simplifies the task of writing software that deals with FITS 
@@ -113,7 +113,6 @@ cmp -s testprog.lis testprog.out
 cmp -s testprog.fit testprog.std
 
 %install
-rm -rf %{buildroot}
 mkdir -p %{buildroot}
 mkdir -p %{buildroot}%{_libdir}
 mkdir -p %{buildroot}%{_includedir}/%{name}
@@ -126,23 +125,15 @@ mkdir %{buildroot}%{_bindir}
 cp -p f{,un}pack %{buildroot}%{_bindir}/
 
 %files
-%defattr(-,root,root)
 %{_bindir}/*
 
 %files -n %{libname}
-%defattr(-,root,root)
 %{_libdir}/*.so.%{major}*
 
-%files -n %{develname}
-%defattr(-,root,root)
+%files -n %{devname}
 %{_libdir}/*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 
-%files -n %{develnamestatic}
-%defattr(-,root,root)
+%files -n %{static}
 %{_libdir}/*.a
-
-
-
-
