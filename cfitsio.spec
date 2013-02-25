@@ -1,16 +1,16 @@
-%define	sversion %(echo %version |sed -e 's#\\.##')
+%define	sversion %(echo %{version} |sed -e 's#\\.##')
 %define	major	0
 %define	libname	%mklibname %{name} %{major}
-%define	devname	%mklibname %name -d
-%define	static	%mklibname %name -d -s
+%define	devname	%mklibname %{name} -d
+%define	static	%mklibname %{name} -d -s
 
 Name:		cfitsio
-Version:	3.290
+Version:	3.310
 Release:	1
 URL:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
-Patch0:         cfitsio.patch
-Patch1:         cfitsio-pkgconfig.patch
+Patch0:		cfitsio.patch
+Patch1:		cfitsio-%{version}-pkgconfig.patch
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
