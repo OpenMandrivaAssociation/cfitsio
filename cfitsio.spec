@@ -96,7 +96,7 @@ the cfits library.
 FC=f95
 export FC
 export CC=gcc # fixes -O*, -g
-%configure2_5x
+%configure2_5x	--enable-reentrant
 %make shared
 ln -s libcfitsio.so.0 libcfitsio.so
 %make fpack
