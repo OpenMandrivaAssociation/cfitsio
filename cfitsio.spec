@@ -10,7 +10,6 @@ Release:	1
 URL:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 Patch0:		cfitsio.patch
-Patch1:		cfitsio-%{version}-pkgconfig.patch
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
@@ -67,12 +66,12 @@ community.
 This package contains the headers required for compiling software that uses
 the cfits library.
 
-%package -n %{static}
+%package -n	%{static}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
-Requires:   %{devname} = %version
-Requires:   %libname = %version
+Requires:	%{devname} = %{version}
+Requires:	%{libname} = %{version}
 
 %description -n %{static}
 CFITSIO is a library of C and Fortran subroutines for reading and 
@@ -90,7 +89,10 @@ the cfits library.
 %prep
 %setup -q -n %{name}
 %patch0 -p1
-%patch1 -p1
+sed -e 's|includedir=@includedir@|includedir=@includedir@/cfitsio|' -i cfitsio.pc.in
+sed -e 's|Libs: -L${libdir} -lcfitsio @LIBS@|Libs: -L${libdir} -lcfitsio|' -i cfitsio.pc.in
+sed -e 's|Libs.private: -lm|Libs.private: @LIBS@ -lz -lm|' -i cfitsio.pc.in 
+sed -e 's|Cflags: -I${includedir}|Cflags: -D_REENTRANT -I${includedir}|' -i cfitsio.pc.in
 
 %build
 FC=f95
@@ -102,9 +104,6 @@ ln -s libcfitsio.so.0 libcfitsio.so
 %make fpack
 %make funpack
 unset FC
-# Manually fix pkgconfig .pc file (BZ 436539, BZ 618291)
-sed 's|/usr/include|/usr/include/%{name}|' cfitsio.pc >cfitsio.pc.new
-mv cfitsio.pc.new cfitsio.pc
 
 %check
 # disable for now..
