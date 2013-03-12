@@ -30,7 +30,7 @@ Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 
 %description -n	%{libname}
-This package contains the share library for %{name}.
+This package contains the shared library for %{name}.
 
 %package -n	%{devname}
 License:	BSD-like
