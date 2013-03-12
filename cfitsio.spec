@@ -2,19 +2,17 @@
 %define	major	0
 %define	libname	%mklibname %{name} %{major}
 %define	devname	%mklibname %{name} -d
-%define	static	%mklibname %{name} -d -s
 
+Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
 Version:	3.310
-Release:	1
-URL:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
-Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
+Release:	2
 Patch0:		cfitsio.patch
-License:	BSD-like
-Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
+License:	BSD-like
+Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
+Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
 BuildRequires:	gcc-gfortran
-BuildRequires:	pkgconfig
 
 %description
 CFITSIO is a library of C and Fortran subroutines for reading and 
@@ -30,65 +28,26 @@ community.
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
-Obsoletes:	%{_lib}%{name} < 3.090
 
 %description -n	%{libname}
-
-CFITSIO is a library of C and Fortran subroutines for reading and
-writing data files in FITS (Flexible Image Transport System) data
-format.  CFITSIO simplifies the task of writing software that deals
-with FITS files by providing an easy to use set of high-level routines
-that insulate the programmer from the internal complexities of the
-FITS file format.  At the same time, CFITSIO provides many advanced
-features that have made it the most widely used FITS file programming
-interface in the astronomical community.  This package contains the
-shared library required by prgrams that use the cfits library.
+This package contains the share library for %{name}.
 
 %package -n	%{devname}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
-Provides:	fitsio-devel = %{version} 
-Provides:	cfitsio-devel = %{version}
 Requires:	%{libname} = %{version}
-Conflicts:	%{_lib}%{name} < 3.090
+Provides:	%{name}-devel = %{version}
+Obsoletes:	%{_lib}cfitsio-static-devel
 
 %description -n	%{devname}
-CFITSIO is a library of C and Fortran subroutines for reading and 
-writing data files in FITS (Flexible Image Transport System) data format. 
-CFITSIO simplifies the task of writing software that deals with FITS 
-files by providing an easy to use set of high-level routines that insulate 
-the programmer from the internal complexities of the FITS file format. 
-At the same time, CFITSIO provides many advanced features that have made 
-it the most widely used FITS file programming interface in the astronomical 
-community.
-
-This package contains the headers required for compiling software that uses
-the cfits library.
-
-%package -n	%{static}
-License:	BSD-like
-Summary:	Library for accessing files in FITS format for C and Fortran
-Group:		System/Libraries
-Requires:	%{devname} = %{version}
-Requires:	%{libname} = %{version}
-
-%description -n %{static}
-CFITSIO is a library of C and Fortran subroutines for reading and 
-writing data files in FITS (Flexible Image Transport System) data format. 
-CFITSIO simplifies the task of writing software that deals with FITS 
-files by providing an easy to use set of high-level routines that insulate 
-the programmer from the internal complexities of the FITS file format. 
-At the same time, CFITSIO provides many advanced features that have made 
-it the most widely used FITS file programming interface in the astronomical 
-community.
-
 This package contains the headers required for compiling software that uses
 the cfits library.
 
 %prep
-%setup -q -n %{name}
-%patch0 -p1
+%setup -qn %{name}
+%apply_patches
+
 sed -e 's|includedir=@includedir@|includedir=@includedir@/cfitsio|' -i cfitsio.pc.in
 sed -e 's|Libs: -L${libdir} -lcfitsio @LIBS@|Libs: -L${libdir} -lcfitsio|' -i cfitsio.pc.in
 sed -e 's|Libs.private: -lm|Libs.private: @LIBS@ -lz -lm|' -i cfitsio.pc.in 
@@ -98,7 +57,8 @@ sed -e 's|Cflags: -I${includedir}|Cflags: -D_REENTRANT -I${includedir}|' -i cfit
 FC=f95
 export FC
 export CC=gcc # fixes -O*, -g
-%configure2_5x	--enable-reentrant
+%configure2_5x	\
+	--enable-reentrant
 %make shared
 ln -s libcfitsio.so.0 libcfitsio.so
 %make fpack
@@ -125,16 +85,16 @@ popd
 mkdir %{buildroot}%{_bindir}
 cp -p f{,un}pack %{buildroot}%{_bindir}/
 
+rm -f %{buildroot}%{_libdir}/*.a
+
 %files
 %{_bindir}/*
 
 %files -n %{libname}
-%{_libdir}/*.so.%{major}*
+%{_libdir}/libcfitsio.so.%{major}*
 
 %files -n %{devname}
 %{_libdir}/*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 
-%files -n %{static}
-%{_libdir}/*.a
