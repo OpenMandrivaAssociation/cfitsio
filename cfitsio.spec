@@ -6,7 +6,7 @@
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
 Version:	3.310
-Release:	2
+Release:	3
 Group:		System/Libraries
 License:	BSD-like
 Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
