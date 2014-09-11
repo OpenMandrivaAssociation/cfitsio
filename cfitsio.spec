@@ -56,8 +56,8 @@ sed -e 's|Cflags: -I${includedir}|Cflags: -D_REENTRANT -I${includedir}|' -i cfit
 %build
 FC=f95
 export FC
-export CC=gcc # fixes -O*, -g
-%configure2_5x	\
+export CC=%{__cc} # fixes -O*, -g
+%configure	\
 	--enable-reentrant
 %make shared
 ln -s libcfitsio.so.0 libcfitsio.so
