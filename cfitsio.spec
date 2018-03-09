@@ -1,17 +1,16 @@
 %define	sversion %(echo %{version} |sed -e 's#\\.##')
-%define	major	0
+%define	major	5
 %define	libname	%mklibname %{name} %{major}
 %define	devname	%mklibname %{name} -d
 
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
-Version:	3.310
-Release:	14
+Version:	3.430
+Release:	1
 Group:		System/Libraries
 License:	BSD-like
 Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
-Patch0:		cfitsio.patch
 BuildRequires:	gcc-gfortran
 
 %description
@@ -60,7 +59,6 @@ export CC=%{__cc} # fixes -O*, -g
 %configure	\
 	--enable-reentrant
 %make shared
-ln -s libcfitsio.so.0 libcfitsio.so
 %make fpack
 %make funpack
 unset FC
@@ -80,7 +78,6 @@ mkdir -p %{buildroot}%{_includedir}/%{name}
 make LIBDIR=%{_lib} INCLUDEDIR=include/%{name} CFITSIO_LIB=%{buildroot}%{_libdir} \
      CFITSIO_INCLUDE=%{buildroot}%{_includedir}/%{name} install
 pushd %{buildroot}%{_libdir}
-ln -s libcfitsio.so.0 libcfitsio.so
 popd
 mkdir %{buildroot}%{_bindir}
 cp -p f{,un}pack %{buildroot}%{_bindir}/
