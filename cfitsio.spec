@@ -45,7 +45,7 @@ the cfits library.
 
 %prep
 %setup -qn %{name}
-%apply_patches
+%autopatch -p1
 
 sed -e 's|includedir=@includedir@|includedir=@includedir@/cfitsio|' -i cfitsio.pc.in
 sed -e 's|Libs: -L${libdir} -lcfitsio @LIBS@|Libs: -L${libdir} -lcfitsio|' -i cfitsio.pc.in
