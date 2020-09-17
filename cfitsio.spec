@@ -1,5 +1,5 @@
 %define sversion %(echo %{version} |sed -e 's#\\.##')
-%define major 5
+%define major 9
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
 
