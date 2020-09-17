@@ -13,7 +13,7 @@ Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{version}.tar.gz
 Patch0:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-zlib.patch
 Patch1:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-noversioncheck.patch
-Patch2:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-sformat.patch
+#Patch2:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-sformat.patch
 BuildRequires:	gcc-gfortran
 BuildRequires:	pkgconfig(bzip2)
 BuildRequires:	pkgconfig(zlib)
