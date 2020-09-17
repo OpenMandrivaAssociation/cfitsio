@@ -100,6 +100,8 @@ install -D -m755 funpack %{buildroot}%{_bindir}/funpack
 install -D -m755 fitscopy %{buildroot}%{_bindir}/fitscopy
 install -D -m755 imcopy %{buildroot}%{_bindir}/imcopy
 
+rm -f %{buildroot}%{_libdir}/*.a
+
 %files
 %{_bindir}/*
 
