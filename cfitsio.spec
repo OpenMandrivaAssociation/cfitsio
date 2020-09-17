@@ -44,8 +44,7 @@ This package contains the headers required for compiling software that uses
 the cfits library.
 
 %prep
-%setup -qn %{name}
-%autopatch -p1
+%autosetup -p1
 rm -rf zlib
 
 sed -e 's|LDFLAGS=.*|LDFLAGS="%{build_ldflags}"|g' -i configure.in
