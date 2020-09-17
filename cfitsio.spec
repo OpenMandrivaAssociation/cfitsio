@@ -1,16 +1,16 @@
-%define	sversion %(echo %{version} |sed -e 's#\\.##')
-%define	major	5
-%define	libname	%mklibname %{name} %{major}
-%define	devname	%mklibname %{name} -d
+%define sversion %(echo %{version} |sed -e 's#\\.##')
+%define major 5
+%define libname %mklibname %{name} %{major}
+%define devname %mklibname %{name} -d
 
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
-Version:	3.430
-Release:	2
+Version:	3.49
+Release:	1
 Group:		System/Libraries
 License:	BSD-like
 Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
-Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}%{sversion}.tar.gz
+Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{version}.tar.gz
 BuildRequires:	gcc-gfortran
 
 %description
@@ -23,15 +23,15 @@ At the same time, CFITSIO provides many advanced features that have made
 it the most widely used FITS file programming interface in the astronomical 
 community.
 
-%package -n	%{libname}
+%package -n %{libname}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
 
-%description -n	%{libname}
+%description -n %{libname}
 This package contains the shared library for %{name}.
 
-%package -n	%{devname}
+%package -n %{devname}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
@@ -39,28 +39,39 @@ Requires:	%{libname} = %{version}
 Provides:	%{name}-devel = %{version}
 Obsoletes:	%{_lib}cfitsio-static-devel
 
-%description -n	%{devname}
+%description -n %{devname}
 This package contains the headers required for compiling software that uses
 the cfits library.
 
 %prep
 %setup -qn %{name}
 %autopatch -p1
+rm -rf zlib
+
+sed -e 's|LDFLAGS=.*|LDFLAGS="%{build_ldflags}"|g' -i configure.in
+autoreconf --fi
 
 sed -e 's|includedir=@includedir@|includedir=@includedir@/cfitsio|' -i cfitsio.pc.in
-sed -e 's|Libs: -L${libdir} -lcfitsio @LIBS@|Libs: -L${libdir} -lcfitsio|' -i cfitsio.pc.in
-sed -e 's|Libs.private: -lm|Libs.private: @LIBS@ -lz -lm|' -i cfitsio.pc.in 
+sed -e 's|Libs.private:.*|Libs.private: @LIBS@ -lz -lm|' -i cfitsio.pc.in
 sed -e 's|Cflags: -I${includedir}|Cflags: -D_REENTRANT -I${includedir}|' -i cfitsio.pc.in
 
 %build
 FC=f95
 export FC
 export CC=%{__cc} # fixes -O*, -g
-%configure	\
-	--enable-reentrant
-%make shared
-%make fpack
-%make funpack
+
+%configure \
+    %ifarch %{x86_64}
+	--enable-sse2 \
+    %endif
+	--enable-reentrant \
+	--with-bzip2
+
+%make_build shared
+%make_build fpack
+%make_build funpack
+%make_build fitscopy
+%make_build imcopy
 unset FC
 
 %check
@@ -72,17 +83,11 @@ cmp -s testprog.lis testprog.out
 cmp -s testprog.fit testprog.std
 
 %install
-mkdir -p %{buildroot}
-mkdir -p %{buildroot}%{_libdir}
-mkdir -p %{buildroot}%{_includedir}/%{name}
-make LIBDIR=%{_lib} INCLUDEDIR=include/%{name} CFITSIO_LIB=%{buildroot}%{_libdir} \
-     CFITSIO_INCLUDE=%{buildroot}%{_includedir}/%{name} install
-pushd %{buildroot}%{_libdir}
-popd
-mkdir %{buildroot}%{_bindir}
-cp -p f{,un}pack %{buildroot}%{_bindir}/
-
-rm -f %{buildroot}%{_libdir}/*.a
+%make_install
+install -D -m755 fpack %{buildroot}%{_bindir}/fpack
+install -D -m755 funpack %{buildroot}%{_bindir}/funpack
+install -D -m755 fitscopy %{buildroot}%{_bindir}/fitscopy
+install -D -m755 imcopy %{buildroot}%{_bindir}/imcopy
 
 %files
 %{_bindir}/*
@@ -94,4 +99,3 @@ rm -f %{buildroot}%{_libdir}/*.a
 %{_libdir}/*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-
