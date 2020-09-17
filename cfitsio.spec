@@ -11,6 +11,9 @@ Group:		System/Libraries
 License:	BSD-like
 Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{version}.tar.gz
+Patch0:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-zlib.patch
+Patch1:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-noversioncheck.patch
+Patch2:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-sformat.patch
 BuildRequires:	gcc-gfortran
 BuildRequires:	pkgconfig(bzip2)
 BuildRequires:	pkgconfig(zlib)
@@ -47,7 +50,14 @@ the cfits library.
 
 %prep
 %autosetup -p1
-rm -rf zlib
+
+# remove bundled zlib
+# not all the files inside zlib belong to zlib
+cd zlib
+    rm adler32.c crc32.c deflate.c infback.c inffast.c inflate.c inflate.h \
+    inftrees.c inftrees.h zlib.h deflate.h trees.c trees.h uncompr.c zconf.h \
+    zutil.c zutil.h crc32.h  inffast.h  inffixed.h 
+cd ..
 
 sed -e 's|LDFLAGS=.*|LDFLAGS="%{build_ldflags}"|g' -i configure.in
 autoreconf -fi

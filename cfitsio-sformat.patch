@@ -1,0 +1,35 @@
+diff -ur cfitsio-3.47/drvrnet.c cfitsio-3.47.sformat/drvrnet.c
+--- cfitsio-3.47/drvrnet.c	2019-05-21 21:41:54.000000000 +0200
++++ cfitsio-3.47.sformat/drvrnet.c	2019-08-01 13:52:41.461958938 +0200
+@@ -1257,9 +1257,9 @@
+          urlname = (char *)clientp;
+          if (urlname)
+          {
+-            fprintf(stderr,"Downloading ");
+-            fprintf(stderr,urlname);
+-            fprintf(stderr,"...\n");
++            fprintf(stderr,"%s","Downloading ");
++            fprintf(stderr,"%s",urlname);
++            fprintf(stderr,"%s","...\n");
+          }
+          isFirst = 0;
+       }
+@@ -1270,13 +1270,13 @@
+          nToDisplay = fullBar;
+       fprintf(stderr,"%3d%% [",percent);
+       for (i=0; i<nToDisplay; ++i)
+-         fprintf(stderr,"=");
++         fprintf(stderr,"%s","=");
+       /* print remaining spaces */
+       for (i=nToDisplay; i<fullBar; ++i)
+-         fprintf(stderr," ");
+-      fprintf(stderr,"]\r");
++         fprintf(stderr,"%s"," ");
++      fprintf(stderr,"%s","]\r");
+       if (isComplete)
+-         fprintf(stderr,"\n");
++         fprintf(stderr,"%s","\n");
+       fflush(stderr);
+    }
+    return 0;
+Sólo en cfitsio-3.47: .drvrnet.c.swp
