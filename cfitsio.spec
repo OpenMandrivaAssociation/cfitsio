@@ -12,6 +12,8 @@ License:	BSD-like
 Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{version}.tar.gz
 BuildRequires:	gcc-gfortran
+BuildRequires:	pkgconfig(bzip2)
+BuildRequires:	pkgconfig(zlib)
 
 %description
 CFITSIO is a library of C and Fortran subroutines for reading and 
