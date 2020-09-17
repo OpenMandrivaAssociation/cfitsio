@@ -1,19 +1,20 @@
-%define sversion %(echo %{version} |sed -e 's#\\.##')
+%define sversion %(echo %version |sed -e 's|0||g')
 %define major 9
 %define libname %mklibname %{name} %{major}
 %define devname %mklibname %{name} -d
 
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
-Version:	3.49
+Version:	3.490
 Release:	1
 Group:		System/Libraries
 License:	BSD-like
 Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
-Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{version}.tar.gz
+Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{sversion}.tar.gz
 Patch0:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-zlib.patch
 Patch1:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-noversioncheck.patch
 #Patch2:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-sformat.patch
+Patch3:		cfitsio-3.480-pkgconfig.patch
 BuildRequires:	gcc-gfortran
 BuildRequires:	pkgconfig(bzip2)
 BuildRequires:	pkgconfig(zlib)
@@ -49,7 +50,7 @@ This package contains the headers required for compiling software that uses
 the cfits library.
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-%{sversion} -p1
 
 # remove bundled zlib
 # not all the files inside zlib belong to zlib
