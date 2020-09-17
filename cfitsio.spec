@@ -48,7 +48,7 @@ the cfits library.
 rm -rf zlib
 
 sed -e 's|LDFLAGS=.*|LDFLAGS="%{build_ldflags}"|g' -i configure.in
-autoreconf --fi
+autoreconf -fi
 
 sed -e 's|includedir=@includedir@|includedir=@includedir@/cfitsio|' -i cfitsio.pc.in
 sed -e 's|Libs.private:.*|Libs.private: @LIBS@ -lz -lm|' -i cfitsio.pc.in
