@@ -1,22 +1,44 @@
-%define sversion %(echo %version |sed -e 's|0||g')
-%define major 9
-%define libname %mklibname %{name} %{major}
+%define major 4
+%define libname %mklibname %{name}
 %define devname %mklibname %{name} -d
+%define oldlibname %mklibname %{name} 9
+
+%bcond_without	bzip
+%bcond_without	curl
+%bcond_without	utils
+%bcond_without	tests
+%ifarch %{x86_64}
+%bcond_without	sse2
+%bcond_without	ssse3
+%else
+%bcond_with	sse2
+%bcond_with	ssse3
+%endif
+%bcond_without	shared
 
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
-Version:	3.490
-Release:	2
+Version:	4.2.0
+Release:	1
 Group:		System/Libraries
 License:	BSD-like
-Url:		http://heasarc.gsfc.nasa.gov/docs/software/fitsio/
-Source0:	ftp://heasarc.gsfc.nasa.gov/software/fitsio/c/%{name}-%{sversion}.tar.gz
-Patch0:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-zlib.patch
-Patch1:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-noversioncheck.patch
-#Patch2:		https://src.fedoraproject.org/rpms/cfitsio/raw/master/f/cfitsio-sformat.patch
-Patch3:		cfitsio-3.480-pkgconfig.patch
+Url:		https://heasarc.gsfc.nasa.gov/docs/software/fitsio/
+Source0:	https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/%{name}-%{version}.tar.gz
+Patch0:		cfitsio-4.2.0-fix_install_path.patch
+# (fedora) https://src.fedoraproject.org/rpms/cfitsio/raw/rawhide/f/cfitsio-noversioncheck.patch
+Patch1:		cfitsio-noversioncheck.patch
+# (fedora) https://src.fedoraproject.org/rpms/cfitsio/raw/rawhide/f/cfitsio-ldflags.patch
+Patch2:		cfitsio-ldflags.patch
+# (fedora) https://src.fedoraproject.org/rpms/cfitsio/raw/rawhide/f/cfitsio-remove-rpath.patch
+Patch3:		cfitsio-remove-rpath.patch
+#Patch3:		cfitsio-3.480-pkgconfig.patch
 BuildRequires:	gcc-gfortran
+%if %{with bzip}
 BuildRequires:	pkgconfig(bzip2)
+%endif
+%if %{with curl}
+BuildRequires:	pkgconfig(libcurl)
+%endif
 BuildRequires:	pkgconfig(zlib)
 
 %description
@@ -29,13 +51,26 @@ At the same time, CFITSIO provides many advanced features that have made
 it the most widely used FITS file programming interface in the astronomical 
 community.
 
+%if %{with utils}
+%files
+%{_bindir}/*
+%endif
+
+#---------------------------------------------------------------------------
+
 %package -n %{libname}
 License:	BSD-like
 Summary:	Library for accessing files in FITS format for C and Fortran
 Group:		System/Libraries
+Obsoletes:	%{oldlibname} < %{EVRD}
 
 %description -n %{libname}
 This package contains the shared library for %{name}.
+
+%files -n %{libname}
+%{_libdir}/libcfitsio.so.%{major}*
+
+#---------------------------------------------------------------------------
 
 %package -n %{devname}
 License:	BSD-like
@@ -49,67 +84,90 @@ Obsoletes:	%{_lib}cfitsio-static-devel
 This package contains the headers required for compiling software that uses
 the cfits library.
 
-%prep
-%autosetup -n %{name}-%{sversion} -p1
-
-# remove bundled zlib
-# not all the files inside zlib belong to zlib
-cd zlib
-    rm adler32.c crc32.c deflate.c infback.c inffast.c inflate.c inflate.h \
-    inftrees.c inftrees.h zlib.h deflate.h trees.c trees.h uncompr.c zconf.h \
-    zutil.c zutil.h crc32.h  inffast.h  inffixed.h 
-cd ..
-
-sed -e 's|LDFLAGS=.*|LDFLAGS="%{build_ldflags}"|g' -i configure.in
-autoreconf -fi
-
-sed -e 's|includedir=@includedir@|includedir=@includedir@/cfitsio|' -i cfitsio.pc.in
-sed -e 's|Libs.private:.*|Libs.private: @LIBS@ -lz -lm|' -i cfitsio.pc.in
-sed -e 's|Cflags: -I${includedir}|Cflags: -D_REENTRANT -I${includedir}|' -i cfitsio.pc.in
-
-%build
-FC=f95
-export FC
-export CC=%{__cc} # fixes -O*, -g
-
-%configure \
-    %ifarch %{x86_64}
-	--enable-sse2 \
-    %endif
-	--enable-reentrant \
-	--with-bzip2
-
-%make_build shared
-%make_build fpack
-%make_build funpack
-%make_build fitscopy
-%make_build imcopy
-unset FC
-
-%check
-# disable for now..
-exit 0
-make testprog
-LD_LIBRARY_PATH=. ./testprog > testprog.lis
-cmp -s testprog.lis testprog.out
-cmp -s testprog.fit testprog.std
-
-%install
-%make_install
-install -D -m755 fpack %{buildroot}%{_bindir}/fpack
-install -D -m755 funpack %{buildroot}%{_bindir}/funpack
-install -D -m755 fitscopy %{buildroot}%{_bindir}/fitscopy
-install -D -m755 imcopy %{buildroot}%{_bindir}/imcopy
-
-rm -f %{buildroot}%{_libdir}/*.a
-
-%files
-%{_bindir}/*
-
-%files -n %{libname}
-%{_libdir}/libcfitsio.so.%{major}*
-
 %files -n %{devname}
 %{_libdir}/*.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
+%{_libdir}/cmake/*
+
+#---------------------------------------------------------------------------
+
+%prep
+%autosetup -p1
+
+# add ldflags to configure.in
+sed -e 's|LDFLAGS=.*|LDFLAGS="%{ldflags}"|g' -i configure.in
+
+# fix cfitsio.pc.in
+sed -i  \
+	-e 's|includedir=@includedir@|&/cfitsio|' \
+	-e 's|Libs.private:.*|& -lz |' \
+ 	-e 's|Cflags:|Cflags: -D_REENTRANT|' \
+	cfitsio.pc.in
+
+# fix cfitsio.pc.cmake
+sed -i  \
+	-e 's|Libs.private:.*|& -lz |' \
+ 	-e 's|Cflags:|Cflags: -D_REENTRANT|' \
+	cfitsio.pc.cmake
+
+%build
+#FC=f95
+#export FC
+#export CC=%{__cc} # fixes -O*, -g
+
+%cmake \
+	-DBUILD_SHARED_LIBS:BOOL=%{?with_shared:ON}%{?!with_shared:OFF} \
+	-DUSE_BZIP:BOOL=%{?with_bzip:ON}%{?!with_bzip:OFF} \
+	-DUSE_CURL:BOOL=%{?with_curl:ON}%{?!with_curl:OFF} \
+	-DUSE_PTHREADS:BOOL=ON \
+	-DUSE_SSE2:BOOL=%{?with_sse2:ON}%{?!with_sse2:OFF} \
+	-DUSE_SSSE3:BOOL=%{?with_ssse3:ON}%{?!with_ssse3:OFF} \
+	-DUTILS:BOOL=%{?with_utils:ON}%{?!with_utils:OFF} \
+	-DTESTS:BOOL=%{?with_tests:ON}%{?!with_tests:OFF} \
+	-G Ninja
+%ninja_build
+
+#autoreconf -fiv
+#configure \
+#	--%{?with_curl:en}%{?!with_curl:dis}able-curl \
+#	--enable-reentrant \
+#	--%{?with_sse2:en}%{?!with_sse2:dis}able-sse2 \
+#	--%{?with_ssse3:en}%{?!with_ssse3:dis}able-ssse3 \
+#	--with%{?!with_bzip:out}-bzip2
+#
+#make_build \
+#	%{?with_shared:shared}
+
+#if %{with utils}
+#make_build fpack
+#make_build funpack
+#make_build fitscopy
+#make_build imcopy
+#endif
+#unset FC
+
+%install
+%ninja_install -C build
+#make_install \
+#	INCLUDEDIR=%{_includedir}/%{name} \
+#	CFITSIO_LIB=%{buildroot}%{_libdir} \
+#	CFITSIO_INCLUDE=%{buildroot}%{_includedir}/%{name}
+
+%if %{with utils}
+#install -Dm 0755 fpack %{buildroot}%{_bindir}/fpack
+#install -Dm 0755 funpack %{buildroot}%{_bindir}/funpack
+#install -Dm 0755 fitscopy %{buildroot}%{_bindir}/fitscopy
+#install -Dm 0755 imcopy %{buildroot}%{_bindir}/imcopy
+%endif
+
+%if %{with shared}
+#rm -f %{buildroot}%{_libdir}/*.a
+%endif
+
+%check
+%if %{with tests}
+export LD_LIBRARY_PATH=.
+%ninja_test -C build
+%endif
+
