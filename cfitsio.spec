@@ -24,14 +24,15 @@ Group:		System/Libraries
 License:	BSD-like
 Url:		https://heasarc.gsfc.nasa.gov/docs/software/fitsio/
 Source0:	https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/%{name}-%{version}.tar.gz
-Patch0:		cfitsio-4.2.0-fix_install_path.patch
+#Patch0:		cfitsio-4.2.0-fix_soname.patch
+Patch1:		cfitsio-4.2.0-fix_install_path.patch
 # (fedora) https://src.fedoraproject.org/rpms/cfitsio/raw/rawhide/f/cfitsio-noversioncheck.patch
-Patch1:		cfitsio-noversioncheck.patch
+Patch2:		cfitsio-noversioncheck.patch
 # (fedora) https://src.fedoraproject.org/rpms/cfitsio/raw/rawhide/f/cfitsio-ldflags.patch
-Patch2:		cfitsio-ldflags.patch
+Patch3:		cfitsio-ldflags.patch
 # (fedora) https://src.fedoraproject.org/rpms/cfitsio/raw/rawhide/f/cfitsio-remove-rpath.patch
-Patch3:		cfitsio-remove-rpath.patch
-#Patch3:		cfitsio-3.480-pkgconfig.patch
+Patch4:		cfitsio-remove-rpath.patch
+
 BuildRequires:	gcc-gfortran
 %if %{with bzip}
 BuildRequires:	pkgconfig(bzip2)
@@ -94,6 +95,10 @@ the cfits library.
 
 %prep
 %autosetup -p1
+
+# use soversion from configure
+sover=$(sed -ne "s,^CFITSIO_SONAME=\(.*\)\1,,p" configure)
+sed -i -e "s,@SONAME@,$sover," CMakeLists.txt
 
 # add ldflags to configure.in
 sed -e 's|LDFLAGS=.*|LDFLAGS="%{ldflags}"|g' -i configure.in

@@ -1,0 +1,20 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -26,6 +26,8 @@ SET(${PROJECT_NAME}_MICRO 0)
+ SET(${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_MAJOR}.${${PROJECT_NAME}_MINOR}.${${PROJECT_NAME}_MICRO})
+ SET(LIB_NAME cfitsio)
+ 
++SET(${PROJECT_NAME}_SONAME @SONAME@)
++
+ # Allow @rpath token in target install name on Macs.
+ # See "cmake --help-policy CMP0042" for more information.
+ IF(POLICY CMP0042)
+@@ -288,7 +290,7 @@ IF (BZIP2_FOUND),
+     SET (PKG_CONFIG_LIBS "${PKG_CONFIG_LIBS} -lbz2")
+ ENDIF(BZIP2_FOUND)
+ 
+-SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES VERSION ${${PROJECT_NAME}_VERSION} SOVERSION ${${PROJECT_NAME}_MAJOR})
++SET_TARGET_PROPERTIES(${LIB_NAME} PROPERTIES VERSION ${${PROJECT_NAME}_VERSION} SOVERSION ${${PROJECT_NAME}_SONAME}.${${PROJECT_NAME}_VERSION})
+ 
+ include(GNUInstallDirs)
+ include(CMakePackageConfigHelpers)
