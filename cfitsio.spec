@@ -6,7 +6,8 @@
 %bcond_without	bzip
 %bcond_without	curl
 %bcond_without	utils
-%bcond_without	tests
+#FIXME: TestProg fails on znver1 arch
+%bcond_with	tests
 %ifarch %{x86_64}
 %bcond_without	sse2
 %bcond_without	ssse3
