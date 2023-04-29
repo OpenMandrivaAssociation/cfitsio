@@ -1,0 +1,11 @@
+--- b/configure
++++ a/configure
+@@ -4670,7 +4670,7 @@
+ 
+ #-------------------------------------------------------------------------------
+ 
+-LDFLAGS="$CFLAGS"
++LDFLAGS="$LDFLAGS"
+ LDFLAGS_BIN="$LDFLAGS"
+ 
+ if test "x$FC" = "xnone" ; then
