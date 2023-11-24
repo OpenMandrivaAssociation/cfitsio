@@ -19,7 +19,7 @@
 
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
-Version:	4.3.0
+Version:	4.3.1
 Release:	1
 Group:		System/Libraries
 License:	BSD-like
