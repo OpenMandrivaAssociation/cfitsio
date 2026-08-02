@@ -1,11 +1,11 @@
---- b/configure
-+++ a/configure
-@@ -4670,7 +4670,7 @@
+--- a/configure
++++ b/configure
+@@ -20031,6 +20031,8 @@
  
- #-------------------------------------------------------------------------------
  
--LDFLAGS="$CFLAGS"
+ CFLAGS="$CFLAGS"
++# Packaging: never overwrite LDFLAGS with CFLAGS (keep env/user LDFLAGS)
 +LDFLAGS="$LDFLAGS"
- LDFLAGS_BIN="$LDFLAGS"
+ LIBPRE=""
  
- if test "x$FC" = "xnone" ; then
+ case $host in

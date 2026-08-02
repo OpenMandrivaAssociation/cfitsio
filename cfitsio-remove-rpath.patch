@@ -1,12 +1,11 @@
-diff -ur cfitsio-4.2.0/configure cfitsio-4.2.0.rpath/configure
---- cfitsio-4.2.0/configure	2022-11-25 10:08:23.942637069 +0100
-+++ cfitsio-4.2.0.rpath/configure	2022-11-25 10:10:13.213414398 +0100
-@@ -5062,7 +5062,7 @@
-         printf "%s\n" "#define _FILE_OFFSET_BITS 64" >>confdefs.h
- 
-         # LDFLAGS used by utilities:
--        LDFLAGS_BIN="$LDFLAGS_BIN -Wl,-rpath,\${CFITSIO_LIB}"
-+        LDFLAGS_BIN="$LDFLAGS_BIN"
- 	;;
-     *mingw32*)
-         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for large file support" >&5
+--- a/configure
++++ b/configure
+@@ -20274,7 +20274,7 @@
+       if test `echo $host | grep -c apple-darwin` -ne 0 -a `echo $CURL_LIB | grep -c "^-L"` -gt 0; then
+         CURL_LIB_PATH=`echo ${CURL_LIB} | tr " " "\012" | grep "^-L" | tr "\012" " " | sed 's:-L::' | sed 's: $::'`
+         if test "x$CURL_LIB_PATH" != x; then
+-          LIBS_CURL="-Wl,-rpath,$CURL_LIB_PATH $CURL_LIB"
++          LIBS_CURL="$CURL_LIB"
+         fi
+       fi
+       if test `echo $host | grep -c cygwin` -ne 0 -o `echo $host | grep -c mingw32` -ne 0; then

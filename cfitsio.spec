@@ -19,7 +19,7 @@
 
 Summary:	Library for accessing files in FITS format for C and Fortran
 Name:		cfitsio
-Version:	4.4.1
+Version:	4.6.4
 Release:	1
 Group:		System/Libraries
 License:	BSD-like
@@ -101,8 +101,8 @@ the cfits library.
 sover=$(sed -ne "s,^CFITSIO_SONAME=\(.*\)\1,,p" configure)
 sed -i -e "s,@SONAME@,$sover," CMakeLists.txt
 
-# add ldflags to configure.in
-sed -e 's|LDFLAGS=.*|LDFLAGS="%{ldflags}"|g' -i configure.in
+# add ldflags to configure.ac (upstream renamed configure.in)
+sed -e 's|LDFLAGS=.*|LDFLAGS="%{ldflags}"|g' -i configure.ac
 
 # fix cfitsio.pc.in
 sed -i  \
